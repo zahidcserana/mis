@@ -42,3 +42,21 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface Investor {
+    id: number;
+    user_id: number;
+    uid: string;
+    name: string;
+    nickname?: string;
+    email: string;
+    permanent_address: string;
+    current_address: string;
+    personal_info?: any;
+    mobile: string;
+    emergency_mobile?: string;
+    status: 'pending' | 'active';
+    user?: User;
+    created_at: string;
+    updated_at: string;
+}
