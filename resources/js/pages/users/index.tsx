@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
-import { User, BreadcrumbItem } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { User, BreadcrumbItem, SharedData } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
     Search, 
     Filter, 
@@ -19,7 +20,8 @@ import {
     Trash, 
     ArrowUpDown,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    CheckCircle
 } from 'lucide-react';
 
 interface UsersPageProps {
@@ -55,6 +57,10 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
     const [verified, setVerified] = useState(filters?.verified || '');
     const [sortField, setSortField] = useState(filters?.sort || 'created_at');
     const [sortDirection, setSortDirection] = useState(filters?.direction || 'desc');
+    
+    // Get flash messages from Laravel session
+    const { props } = usePage<SharedData & { success?: string }>();
+    const successMessage = props.success;
 
     useEffect(() => {
         const delayedSearch = setTimeout(() => {
@@ -119,6 +125,19 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
             .slice(0, 2);
     };
 
+    const handleDelete = (userId: number, userName: string) => {
+        if (confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
+            router.delete(`/users/${userId}`, {
+                onSuccess: () => {
+                    // Success message will be handled by Laravel session flash
+                },
+                onError: () => {
+                    alert('Failed to delete user. Please try again.');
+                }
+            });
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Users" />
@@ -139,6 +158,16 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                         </Button>
                     </Link>
                 </div>
+
+                {/* Success Message */}
+                {successMessage && (
+                    <Alert className="bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
+                        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <AlertDescription className="text-green-800 dark:text-green-200">
+                            {successMessage}
+                        </AlertDescription>
+                    </Alert>
+                )}
 
                 {/* Filters */}
                 <Card>
@@ -269,7 +298,10 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                                                     Edit
                                                                 </Link>
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem className="text-destructive">
+                                                            <DropdownMenuItem 
+                                                                className="text-destructive"
+                                                                onClick={() => handleDelete(user.id, user.name)}
+                                                            >
                                                                 <Trash className="mr-2 h-4 w-4" />
                                                                 Delete
                                                             </DropdownMenuItem>

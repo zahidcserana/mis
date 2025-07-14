@@ -144,10 +144,24 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
         
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-        ]);
+        ];
+
+        // Only validate password if it's provided
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
 
         $user->update($validated);
 
