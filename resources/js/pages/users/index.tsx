@@ -97,10 +97,11 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
     };
 
     const handleVerifiedChange = (value: string) => {
-        setVerified(value);
+        const filterValue = value === 'all' ? '' : value;
+        setVerified(filterValue);
         router.get('/users', {
             search: search || undefined,
-            verified: value || undefined,
+            verified: filterValue || undefined,
             sort: sortField,
             direction: sortDirection,
         }, {
@@ -158,12 +159,12 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                     className="pl-10"
                                 />
                             </div>
-                            <Select value={verified} onValueChange={handleVerifiedChange}>
+                            <Select value={verified || "all"} onValueChange={handleVerifiedChange}>
                                 <SelectTrigger className="w-full md:w-[200px]">
                                     <SelectValue placeholder="Email Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Users</SelectItem>
+                                    <SelectItem value="all">All Users</SelectItem>
                                     <SelectItem value="verified">Verified</SelectItem>
                                     <SelectItem value="unverified">Unverified</SelectItem>
                                 </SelectContent>
