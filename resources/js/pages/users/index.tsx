@@ -35,7 +35,7 @@ interface UsersPageProps {
             active: boolean;
         }>;
     };
-    filters: {
+    filters?: {
         search?: string;
         verified?: string;
         sort?: string;
@@ -50,15 +50,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function UsersIndex({ users, filters }: UsersPageProps) {
-    const [search, setSearch] = useState(filters.search || '');
-    const [verified, setVerified] = useState(filters.verified || '');
-    const [sortField, setSortField] = useState(filters.sort || 'created_at');
-    const [sortDirection, setSortDirection] = useState(filters.direction || 'desc');
+export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
+    const [search, setSearch] = useState(filters?.search || '');
+    const [verified, setVerified] = useState(filters?.verified || '');
+    const [sortField, setSortField] = useState(filters?.sort || 'created_at');
+    const [sortDirection, setSortDirection] = useState(filters?.direction || 'desc');
 
     useEffect(() => {
         const delayedSearch = setTimeout(() => {
-            if (search !== filters.search) {
+            if (search !== (filters?.search || '')) {
                 handleFilterChange();
             }
         }, 300);
