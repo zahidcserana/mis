@@ -14,6 +14,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::resource('users', UserController::class);
+
+    // Investor routes
+    Route::resource('investors', \App\Http\Controllers\InvestorController::class);
+    Route::patch('investors/{investor}/activate', [\App\Http\Controllers\InvestorController::class, 'activate'])->name('investors.activate');
+    Route::patch('investors/{investor}/pending', [\App\Http\Controllers\InvestorController::class, 'setPending'])->name('investors.pending');
 });
 
 require __DIR__.'/settings.php';
