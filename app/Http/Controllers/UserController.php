@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(User::class, 'user');
+        // Authorization will be handled manually in each method
     }
 
     /**
@@ -19,6 +19,8 @@ class UserController extends Controller
      */
     public function index(Request $request): Response
     {
+        $this->authorize('viewAny', User::class);
+        
         $query = User::query();
 
         // Search functionality
@@ -69,6 +71,8 @@ class UserController extends Controller
      */
     public function create(): Response
     {
+        $this->authorize('create', User::class);
+        
         return Inertia::render('users/create');
     }
 
@@ -77,6 +81,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -96,6 +102,8 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
+        $this->authorize('view', $user);
+        
         return Inertia::render('users/show', [
             'user' => [
                 'id' => $user->id,
@@ -113,6 +121,8 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        $this->authorize('update', $user);
+        
         return Inertia::render('users/edit', [
             'user' => [
                 'id' => $user->id,
@@ -127,6 +137,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -143,6 +155,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+        
         $user->delete();
 
         return redirect()->route('users.index')
