@@ -56,6 +56,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'type' => $user->type,
                 'email_verified_at' => $user->email_verified_at?->format('M d, Y'),
                 'created_at' => $user->created_at->format('M d, Y'),
             ]);
@@ -92,6 +93,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'type' => 'required|in:admin,member',
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
@@ -114,6 +116,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'type' => $user->type,
                 'email_verified_at' => $user->email_verified_at?->format('M d, Y H:i'),
                 'created_at' => $user->created_at->format('M d, Y H:i'),
                 'updated_at' => $user->updated_at->format('M d, Y H:i'),
@@ -133,6 +136,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'type' => $user->type,
             ],
         ]);
     }
@@ -147,6 +151,7 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'type' => 'required|in:admin,member',
         ];
 
         // Only validate password if it's provided

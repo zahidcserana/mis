@@ -58,9 +58,10 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
     const [sortField, setSortField] = useState(filters?.sort || 'created_at');
     const [sortDirection, setSortDirection] = useState(filters?.direction || 'desc');
     
-    // Get flash messages from Laravel session
+    // Get flash messages and current user from Laravel session
     const { props } = usePage<SharedData & { success?: string }>();
     const successMessage = props.success;
+    const currentUser = props.auth.user;
 
     useEffect(() => {
         const delayedSearch = setTimeout(() => {
@@ -151,12 +152,14 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                             Manage and view all users in the system
                         </p>
                     </div>
-                    <Link href="/users/create">
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add User
-                        </Button>
-                    </Link>
+                    {currentUser.type === 'admin' && (
+                        <Link href="/users/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add User
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* Success Message */}
@@ -229,6 +232,7 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                                 <ArrowUpDown className="ml-2 h-4 w-4" />
                                             </Button>
                                         </th>
+                                        <th className="px-6 py-4 text-left">Type</th>
                                         <th className="px-6 py-4 text-left">Status</th>
                                         <th className="px-6 py-4 text-left">
                                             <Button
@@ -246,7 +250,7 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                 <tbody className="divide-y">
                                     {users.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                                            <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                                                 No users found matching your criteria.
                                             </td>
                                         </tr>
@@ -270,6 +274,13 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <Badge
+                                                        variant={user.type === 'admin' ? 'destructive' : 'outline'}
+                                                    >
+                                                        {user.type === 'admin' ? 'Admin' : 'Member'}
+                                                    </Badge>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <Badge
                                                         variant={user.email_verified_at ? "default" : "secondary"}
                                                     >
                                                         {user.email_verified_at ? 'Verified' : 'Unverified'}
@@ -279,34 +290,38 @@ export default function UsersIndex({ users, filters = {} }: UsersPageProps) {
                                                     {user.created_at}
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="sm">
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem asChild>
-                                                                <Link href={`/users/${user.id}`}>
-                                                                    <Eye className="mr-2 h-4 w-4" />
-                                                                    View
-                                                                </Link>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem asChild>
-                                                                <Link href={`/users/${user.id}/edit`}>
-                                                                    <Edit className="mr-2 h-4 w-4" />
-                                                                    Edit
-                                                                </Link>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem 
-                                                                className="text-destructive"
-                                                                onClick={() => handleDelete(user.id, user.name)}
-                                                            >
-                                                                <Trash className="mr-2 h-4 w-4" />
-                                                                Delete
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                    {(currentUser.type === 'admin' || currentUser.id === user.id) && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="sm">
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={`/users/${user.id}`}>
+                                                                        <Eye className="mr-2 h-4 w-4" />
+                                                                        View
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={`/users/${user.id}/edit`}>
+                                                                        <Edit className="mr-2 h-4 w-4" />
+                                                                        Edit
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                {currentUser.type === 'admin' && currentUser.id !== user.id && (
+                                                                    <DropdownMenuItem 
+                                                                        className="text-destructive"
+                                                                        onClick={() => handleDelete(user.id, user.name)}
+                                                                    >
+                                                                        <Trash className="mr-2 h-4 w-4" />
+                                                                        Delete
+                                                                    </DropdownMenuItem>
+                                                                )}
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))

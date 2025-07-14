@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Save, Eye, EyeOff } from 'lucide-react';
 
 interface EditUserProps {
@@ -13,12 +14,14 @@ interface EditUserProps {
         id: number;
         name: string;
         email: string;
+        type: 'admin' | 'member';
     };
     errors?: {
         name?: string;
         email?: string;
         password?: string;
         password_confirmation?: string;
+        type?: string;
     };
 }
 
@@ -26,6 +29,7 @@ export default function EditUser({ user, errors = {} }: EditUserProps) {
     const [data, setData] = useState({
         name: user.name,
         email: user.email,
+        type: user.type,
         password: '',
         password_confirmation: '',
     });
@@ -56,6 +60,7 @@ export default function EditUser({ user, errors = {} }: EditUserProps) {
         const submitData = {
             name: data.name,
             email: data.email,
+            type: data.type,
             ...(data.password && {
                 password: data.password,
                 password_confirmation: data.password_confirmation,
@@ -72,6 +77,13 @@ export default function EditUser({ user, errors = {} }: EditUserProps) {
         setData(prev => ({
             ...prev,
             [field]: e.target.value,
+        }));
+    };
+
+    const handleSelectChange = (field: keyof typeof data) => (value: string) => {
+        setData(prev => ({
+            ...prev,
+            [field]: value,
         }));
     };
 
@@ -134,6 +146,23 @@ export default function EditUser({ user, errors = {} }: EditUserProps) {
                                 />
                                 {errors.email && (
                                     <p className="text-sm text-destructive">{errors.email}</p>
+                                )}
+                            </div>
+
+                            {/* User Type Field */}
+                            <div className="space-y-2">
+                                <Label htmlFor="type">User Type</Label>
+                                <Select value={data.type} onValueChange={handleSelectChange('type')}>
+                                    <SelectTrigger className={errors.type ? 'border-destructive' : ''}>
+                                        <SelectValue placeholder="Select user type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="member">Member</SelectItem>
+                                        <SelectItem value="admin">Admin</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.type && (
+                                    <p className="text-sm text-destructive">{errors.type}</p>
                                 )}
                             </div>
 

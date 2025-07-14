@@ -12,6 +12,7 @@ interface ShowUserProps {
         id: number;
         name: string;
         email: string;
+        type: 'admin' | 'member';
         email_verified_at: string | null;
         created_at: string;
         updated_at: string;
@@ -106,6 +107,22 @@ export default function ShowUser({ user }: ShowUserProps) {
                                 <div>
                                     <p className="text-sm font-medium text-muted-foreground">Email Address</p>
                                     <p className="text-base font-medium">{user.email}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                    <UserIcon className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">User Type</p>
+                                    <div className="flex items-center gap-2">
+                                        <Badge
+                                            variant={user.type === 'admin' ? 'destructive' : 'outline'}
+                                        >
+                                            {user.type === 'admin' ? 'Admin' : 'Member'}
+                                        </Badge>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>

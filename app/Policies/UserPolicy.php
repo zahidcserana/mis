@@ -11,8 +11,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        // Allow authenticated users to view the user list
-        // You can modify this based on your role system
+        // Allow all authenticated users to view the user list
         return true;
     }
 
@@ -21,9 +20,9 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        // Users can view their own profile, or all users can view others
-        // Modify based on your business logic
-        return true;
+        // Users can view their own profile
+        // Admins can view any profile
+        return $user->isAdmin() || $user->id === $model->id;
     }
 
     /**
@@ -31,10 +30,8 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        // Only allow creation if user has admin role
-        // For now, allow all authenticated users
-        // You might want to add role-based checks here
-        return true;
+        // Only admins can create new users
+        return $user->isAdmin();
     }
 
     /**
@@ -44,7 +41,7 @@ class UserPolicy
     {
         // Users can update their own profile
         // Admins can update any profile
-        return $user->id === $model->id;
+        return $user->isAdmin() || $user->id === $model->id;
     }
 
     /**
@@ -52,9 +49,9 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
+        // Only admins can delete users
         // Users cannot delete their own account
-        // Allow deletion of other users (customize based on your role system)
-        return $user->id !== $model->id;
+        return $user->isAdmin() && $user->id !== $model->id;
     }
 
     /**
