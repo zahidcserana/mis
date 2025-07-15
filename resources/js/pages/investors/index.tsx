@@ -56,7 +56,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function InvestorsIndex({ investors, filters = {}, statuses }: InvestorsPageProps) {
     const { flash } = usePage<SharedData>().props;
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status || '');
+    const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
         router.get('/investors', 
             { 
                 search: searchTerm || undefined,
-                status: statusFilter || undefined,
+                status: statusFilter === 'all' ? undefined : statusFilter,
             },
             { 
                 preserveState: true,
@@ -85,7 +85,7 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
         router.get('/investors', 
             { 
                 search: searchTerm || undefined,
-                status: value || undefined,
+                status: value === 'all' ? undefined : value,
             },
             { 
                 preserveState: true,
@@ -169,7 +169,7 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
                                         <SelectValue placeholder="Filter by status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">All Statuses</SelectItem>
+                                        <SelectItem value="all">All Statuses</SelectItem>
                                         {statuses.map((status) => (
                                             <SelectItem key={status} value={status}>
                                                 {status.charAt(0).toUpperCase() + status.slice(1)}
