@@ -55,11 +55,11 @@ export default function ShowInvestor({ investor }: ShowInvestorProps) {
     };
 
     const handleActivate = () => {
-        router.post(`/investors/${investor.id}/activate`);
+        router.patch(`/investors/${investor.id}/activate`);
     };
 
     const handleSetPending = () => {
-        router.post(`/investors/${investor.id}/set-pending`);
+        router.patch(`/investors/${investor.id}/pending`);
     };
 
     const getInitials = (name: string) => {
