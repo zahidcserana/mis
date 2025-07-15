@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investor;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -53,6 +56,19 @@ class InvestorController extends Controller
     }
 
     /**
+     * Show the form for creating a new investor with a new user.
+     */
+    public function createWithUser(): Response
+    {
+        $this->authorize('create', Investor::class);
+
+        return Inertia::render('investors/create-with-user', [
+            'statuses' => Investor::getStatuses(),
+            'user_types' => ['admin', 'member'],
+        ]);
+    }
+
+    /**
      * Store a newly created investor in storage.
      */
     public function store(Request $request): RedirectResponse
@@ -78,6 +94,70 @@ class InvestorController extends Controller
 
         return redirect()->route('investors.show', $investor)
             ->with('success', 'Investor created successfully.');
+    }
+
+    /**
+     * Store a newly created investor with a new user in storage.
+     */
+    public function storeWithUser(Request $request): RedirectResponse
+    {
+        $this->authorize('create', Investor::class);
+
+        $validated = $request->validate([
+            // User fields
+            'user_name' => ['required', 'string', 'max:255'],
+            'user_email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'user_type' => ['required', 'string', 'in:admin,member'],
+            
+            // Investor fields
+            'uid' => ['required', 'string', 'max:255', 'unique:investors'],
+            'name' => ['required', 'string', 'max:255'],
+            'nickname' => ['nullable', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:investors'],
+            'permanent_address' => ['required', 'string'],
+            'current_address' => ['required', 'string'],
+            'personal_info' => ['nullable', 'array'],
+            'mobile' => ['required', 'string', 'max:20'],
+            'emergency_mobile' => ['nullable', 'string', 'max:20'],
+            'status' => ['required', Rule::in(Investor::getStatuses())],
+        ]);
+
+        try {
+            $result = DB::transaction(function () use ($validated) {
+                // Create the user first
+                $user = User::create([
+                    'name' => $validated['user_name'],
+                    'email' => $validated['user_email'],
+                    'password' => Hash::make($validated['password']),
+                    'type' => $validated['user_type'],
+                ]);
+
+                // Create the investor linked to the user
+                $investor = Investor::create([
+                    'user_id' => $user->id,
+                    'uid' => $validated['uid'],
+                    'name' => $validated['name'],
+                    'nickname' => $validated['nickname'],
+                    'email' => $validated['email'],
+                    'permanent_address' => $validated['permanent_address'],
+                    'current_address' => $validated['current_address'],
+                    'personal_info' => $validated['personal_info'],
+                    'mobile' => $validated['mobile'],
+                    'emergency_mobile' => $validated['emergency_mobile'],
+                    'status' => $validated['status'],
+                ]);
+
+                return $investor;
+            });
+
+            return redirect()->route('investors.show', $result)
+                ->with('success', 'User and investor created successfully.');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create user and investor: ' . $e->getMessage()]);
+        }
     }
 
     /**

@@ -17,6 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Investor routes
     Route::resource('investors', \App\Http\Controllers\InvestorController::class);
+    Route::get('investors/create-with-user', [\App\Http\Controllers\InvestorController::class, 'createWithUser'])->name('investors.create-with-user');
+    Route::post('investors/create-with-user', [\App\Http\Controllers\InvestorController::class, 'storeWithUser'])->name('investors.store-with-user');
     Route::patch('investors/{investor}/activate', [\App\Http\Controllers\InvestorController::class, 'activate'])->name('investors.activate');
     Route::patch('investors/{investor}/pending', [\App\Http\Controllers\InvestorController::class, 'setPending'])->name('investors.pending');
 });

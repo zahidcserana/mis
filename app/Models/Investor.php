@@ -98,4 +98,19 @@ class Investor extends Model
     {
         return $query->where('status', self::STATUS_PENDING);
     }
+
+    /**
+     * Create an investor with an associated user.
+     */
+    public static function createWithUser(array $userData, array $investorData): self
+    {
+        return \DB::transaction(function () use ($userData, $investorData) {
+            $user = User::create($userData);
+            
+            $investorData['user_id'] = $user->id;
+            $investor = self::create($investorData);
+            
+            return $investor->load('user');
+        });
+    }
 }

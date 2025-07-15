@@ -72,4 +72,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Investor::class);
     }
+
+    /**
+     * Create a user with an associated investor.
+     */
+    public static function createWithInvestor(array $userData, array $investorData): User
+    {
+        return \DB::transaction(function () use ($userData, $investorData) {
+            $user = self::create($userData);
+            
+            $investorData['user_id'] = $user->id;
+            $user->investors()->create($investorData);
+            
+            return $user->load('investors');
+        });
+    }
 }
