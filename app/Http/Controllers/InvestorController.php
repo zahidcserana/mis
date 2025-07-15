@@ -33,7 +33,7 @@ class InvestorController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return Inertia::render('Investors/Index', [
+        return Inertia::render('investors/index', [
             'investors' => $investors,
             'filters' => $request->only(['search', 'status']),
             'statuses' => Investor::getStatuses(),
@@ -47,7 +47,7 @@ class InvestorController extends Controller
     {
         $this->authorize('create', Investor::class);
 
-        return Inertia::render('Investors/Create', [
+        return Inertia::render('investors/create', [
             'statuses' => Investor::getStatuses(),
         ]);
     }
@@ -89,7 +89,7 @@ class InvestorController extends Controller
 
         $investor->load('user');
 
-        return Inertia::render('Investors/Show', [
+        return Inertia::render('investors/show', [
             'investor' => $investor,
         ]);
     }
@@ -101,7 +101,7 @@ class InvestorController extends Controller
     {
         $this->authorize('update', $investor);
 
-        return Inertia::render('Investors/Edit', [
+        return Inertia::render('investors/edit', [
             'investor' => $investor,
             'statuses' => Investor::getStatuses(),
         ]);
