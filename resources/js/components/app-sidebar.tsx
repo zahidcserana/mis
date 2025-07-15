@@ -23,6 +23,11 @@ const mainNavItems: NavItem[] = [
         href: '/investors',
         icon: DollarSign,
     },
+     {
+        title: 'Account',
+        href: '/accounts',
+        icon: DollarSign,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

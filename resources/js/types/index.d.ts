@@ -60,3 +60,15 @@ export interface Investor {
     created_at: string;
     updated_at: string;
 }
+
+export interface Account {
+    id: number;
+    investor_id: number;
+    name: string;
+    amount?: number;
+    is_active: boolean;
+    investor?: Investor;
+    created_at: string;
+    updated_at: string;
+}
+
