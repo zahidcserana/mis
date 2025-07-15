@@ -15,6 +15,12 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     /**
+     * Types constants.
+     */
+    public const TYPE_ADMIN = 'admin';
+    public const TYPE_MEMBER = 'member';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -54,7 +60,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->type === 'admin';
+        return $this->type === User::TYPE_ADMIN;
     }
 
     /**
@@ -62,7 +68,7 @@ class User extends Authenticatable
      */
     public function isMember(): bool
     {
-        return $this->type === 'member';
+        return $this->type === User::TYPE_MEMBER;
     }
 
     /**

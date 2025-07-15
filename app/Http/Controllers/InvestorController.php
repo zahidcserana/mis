@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investor;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -72,7 +74,20 @@ class InvestorController extends Controller
             'status' => ['required', Rule::in(Investor::getStatuses())],
         ]);
 
-        $validated['user_id'] = Auth::id();
+        $existingUser = User::where('email', $validated['email'])->first();
+
+        if (!$existingUser) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['email']),
+                'type' => User::TYPE_MEMBER
+            ]);
+
+            $validated['user_id'] = $user->id;
+        } else {
+            $validated['user_id'] = $existingUser->id;
+        }
 
         $investor = Investor::create($validated);
 

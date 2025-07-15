@@ -24,7 +24,7 @@ class InvestorPolicy
     {
         // Users can view their own investor records
         // You can also allow admins or other roles here
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -44,7 +44,7 @@ class InvestorPolicy
     {
         // Users can update their own investor records
         // You can also allow admins or other roles here
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -54,7 +54,7 @@ class InvestorPolicy
     {
         // Users can delete their own investor records
         // You can also allow admins or other roles here
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -62,7 +62,7 @@ class InvestorPolicy
      */
     public function restore(User $user, Investor $investor): bool
     {
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -70,7 +70,7 @@ class InvestorPolicy
      */
     public function forceDelete(User $user, Investor $investor): bool
     {
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -80,7 +80,7 @@ class InvestorPolicy
     {
         // Only allow the owner to activate their investor record
         // You might want to restrict this to admins only
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 
     /**
@@ -90,6 +90,6 @@ class InvestorPolicy
     {
         // Only allow the owner to change status to pending
         // You might want to restrict this to admins only
-        return $user->id === $investor->user_id;
+        return $user->isAdmin() || $user->id === $investor->user_id;
     }
 }
