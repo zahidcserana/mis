@@ -12,6 +12,9 @@ payments:
 - is_adjust
 - remarks
 
+task
+- Payment: Create
+
 investments
 - account_id
 - for_month (2025-04) // []
@@ -19,3 +22,5 @@ investments
 - type (regular, eid, other)
 
 
+task
+- Investment: Create
