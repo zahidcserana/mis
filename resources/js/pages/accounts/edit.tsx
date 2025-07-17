@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import { BreadcrumbItem } from '@/types';
+import { Investor, BreadcrumbItem, Account } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, Eye, EyeOff } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Save, User } from 'lucide-react';
 
-interface Investor {
-    id: number;
-    name: string;
-}
-
-interface CreateAccountProps {
+interface EditAccountProps {
+    account: Account;
     investors: Investor[];
     errors?: {
         name?: string;
@@ -23,69 +20,81 @@ interface CreateAccountProps {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Accounts',
-        href: '/accounts',
-    },
-    {
-        title: 'Create Account',
-        href: '/accounts/create',
-    },
-];
-
-export default function CreateAccount({ investors, errors = {} }: CreateAccountProps) {
+export default function EditAccount({ account, investors, errors = {} }: EditAccountProps) {
     const [data, setData] = useState({
-        name: '',
-        amount: '',
-        investor_id: '',
+        name: account.name || '',
+        amount: account.amount || '',
+        investor_id: String(account.investor_id || ''),
     });
     const [processing, setProcessing] = useState(false);
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Accounts',
+            href: '/accounts',
+        },
+        {
+            title: account.name,
+            href: `/accounts/${account.id}`,
+        },
+        {
+            title: 'Edit',
+            href: `/accounts/${account.id}/edit`,
+        },
+    ];
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
 
-        router.post('/accounts', data, {
+        const submitData = {
+            ...data,
+            investor_id: parseInt(data.investor_id, 10),
+        };
+
+        router.put(`/accounts/${account.id}`, submitData, {
             onFinish: () => setProcessing(false),
-            onError: () => setProcessing(false),
         });
     };
 
-    const handleChange = (field: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (field: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setData(prev => ({
             ...prev,
-            [field]: e.target.value,
+            [field]: e.target.value
         }));
     };
 
     const handleSelectChange = (field: keyof typeof data) => (value: string) => {
         setData(prev => ({
             ...prev,
-            [field]: value,
+            [field]: value
+        }));
+    };
+
+    const copyPermanentToCurrent = () => {
+        setData(prev => ({
+            ...prev,
         }));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Account" />
+            <Head title={`Edit ${account.name}`} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/accounts">
-                            <Button variant="outline" size="sm">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Accounts
-                            </Button>
-                        </Link>
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight">Create Account</h1>
-                            <p className="text-muted-foreground">
-                                Add a new account to the system
-                            </p>
-                        </div>
+                <div className="flex items-center gap-4">
+                    <Link href={`/investors/${account.id}`}>
+                        <Button variant="outline" size="sm">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Account
+                        </Button>
+                    </Link>
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900">Edit Account</h1>
+                        <p className="text-sm text-gray-600">
+                            Update {account.name}'s information
+                        </p>
                     </div>
                 </div>
 
@@ -150,24 +159,15 @@ export default function CreateAccount({ investors, errors = {} }: CreateAccountP
 
                             {/* Submit Buttons */}
                             <div className="flex gap-4 pt-4">
-                                <Button type="submit" disabled={processing}>
-                                    {processing ? (
-                                        <>
-                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                            Creating...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="mr-2 h-4 w-4" />
-                                            Create Account
-                                        </>
-                                    )}
-                                </Button>
-                                <Link href="/accounts">
-                                    <Button type="button" variant="outline" disabled={processing}>
+                                <Link href={`/accounts/${account.id}`}>
+                                    <Button type="button" variant="outline">
                                         Cancel
                                     </Button>
                                 </Link>
+                                <Button type="submit" disabled={processing}>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {processing ? 'Updating...' : 'Update Account'}
+                                </Button>
                             </div>
                         </form>
                     </CardContent>

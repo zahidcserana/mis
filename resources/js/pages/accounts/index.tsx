@@ -197,8 +197,8 @@ export default function AccountsIndex({ accounts, filters = {} }: AccountsPagePr
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Accounts</SelectItem>
-                                    <SelectItem value="verified">Verified</SelectItem>
-                                    <SelectItem value="unverified">Unverified</SelectItem>
+                                    <SelectItem value="verified">Active</SelectItem>
+                                    <SelectItem value="unverified">Inactive</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -270,14 +270,14 @@ export default function AccountsIndex({ accounts, filters = {} }: AccountsPagePr
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 text-muted-foreground">
-                                                    {account.investor.name}
+                                                    {account.investor?.name}
                                                 </td>
                                                 <td className="px-6 py-4 text-muted-foreground">
                                                     {account.amount}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <Badge
-                                                        variant={account.is_active ? "default" : "secondary"}
+                                                        variant={account.is_active ? "default" : "destructive"}
                                                     >
                                                         {account.is_active ? 'Yes' : 'No'}
                                                     </Badge>
