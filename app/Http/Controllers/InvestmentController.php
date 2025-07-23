@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Investment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvestmentController extends Controller
 {
@@ -61,5 +62,24 @@ class InvestmentController extends Controller
     public function destroy(Investment $investment)
     {
         //
+    }
+
+    public function storeBulk(Request $request)
+    {
+        $validated = $request->validate([
+            'investments' => 'required|array|min:1',
+            'investments.*.account_id' => 'required|exists:accounts,id',
+            'investments.*.for_month' => 'required|date_format:Y-m',
+            'investments.*.amount' => 'required|numeric|min:0',
+            'investments.*.type' => 'required|in:regular,eid,others',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['investments'] as $data) {
+                Investment::create($data);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Investments added successfully!');
     }
 }

@@ -72,3 +72,14 @@ export interface Account {
     updated_at: string;
 }
 
+export interface Payment {
+    id: number;
+    investor_id: number;
+    amount?: number;
+    remarks: string;
+    is_adjusted: boolean;
+    investor?: Investor;
+    created_at: string;
+    updated_at: string;
+}
+

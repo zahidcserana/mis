@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,9 +16,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    Route::patch('accounts/{account}/activate', [\App\Http\Controllers\AccountController::class, 'activate'])->name('accounts.activate');
+    Route::patch('payments/{payment}/adjust', [PaymentController::class, 'adjust'])->name('payments.adjust');
+    Route::post('investments/bulk', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
+
+    Route::resource('payments', PaymentController::class);
     Route::resource('users', UserController::class);
     Route::resource('accounts', AccountController::class);
-    Route::patch('accounts/{account}/activate', [\App\Http\Controllers\AccountController::class, 'activate'])->name('accounts.activate');
 
     // Investor routes
     Route::resource('investors', \App\Http\Controllers\InvestorController::class);
