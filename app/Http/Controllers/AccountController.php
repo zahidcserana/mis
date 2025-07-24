@@ -17,7 +17,8 @@ class AccountController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = Account::query()->with('investor');
+        $query = Account::query()->with('investor')
+                ->withSum('investments', 'amount');
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -60,6 +61,7 @@ class AccountController extends Controller
                 'name' => $account->name,
                 'amount' => $account->amount,
                 'is_active' => $account->is_active,
+                'total_amount' => $account->investments_sum_amount ?? 0.00,
                 'investor' => [
                     'id' => $account->investor->id,
                     'name' => $account->investor->name,

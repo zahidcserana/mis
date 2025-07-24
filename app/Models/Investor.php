@@ -109,4 +109,15 @@ class Investor extends Model
     {
         return $this->accounts()->where('is_active', true);
     }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function getTotalPaymentsAttribute()
+    {
+        return $this->payments()->sum('amount');
+    }
+
 }

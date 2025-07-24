@@ -233,6 +233,7 @@ export default function AccountsIndex({ accounts, filters = {} }: AccountsPagePr
                                             </Button>
                                         </th>
                                         <th className="px-6 py-4 text-left">Amount</th>
+                                        <th className="px-6 py-4 text-left">Total</th>
                                         <th className="px-6 py-4 text-left">Status</th>
                                         <th className="px-6 py-4 text-left">
                                             <Button
@@ -275,6 +276,9 @@ export default function AccountsIndex({ accounts, filters = {} }: AccountsPagePr
                                                 <td className="px-6 py-4 text-muted-foreground">
                                                     {account.amount}
                                                 </td>
+                                                <td className="px-6 py-4 text-muted-foreground">
+                                                        <div className="text-sm">{ parseFloat(account.total_amount).toFixed(2) }</div>
+                                                    </td>
                                                 <td className="px-6 py-4">
                                                     <Badge
                                                         variant={account.is_active ? "default" : "destructive"}

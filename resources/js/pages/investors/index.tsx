@@ -10,14 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-    Search, 
-    Filter, 
-    Plus, 
-    MoreHorizontal, 
-    Eye, 
-    Edit, 
-    Trash, 
+import {
+    Search,
+    Filter,
+    Plus,
+    MoreHorizontal,
+    Eye,
+    Edit,
+    Trash,
     ArrowUpDown,
     ChevronLeft,
     ChevronRight,
@@ -68,28 +68,28 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
     }, [flash?.success]);
 
     const handleFilterChange = () => {
-        router.get('/investors', 
-            { 
+        router.get('/investors',
+            {
                 search: searchTerm || undefined,
                 status: statusFilter === 'all' ? undefined : statusFilter,
             },
-            { 
+            {
                 preserveState: true,
-                replace: true 
+                replace: true
             }
         );
     };
 
     const handleStatusChange = (value: string) => {
         setStatusFilter(value);
-        router.get('/investors', 
-            { 
+        router.get('/investors',
+            {
                 search: searchTerm || undefined,
                 status: value === 'all' ? undefined : value,
             },
-            { 
+            {
                 preserveState: true,
-                replace: true 
+                replace: true
             }
         );
     };
@@ -118,7 +118,7 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Investors" />
-            
+
             <div className="space-y-6">
                 {showSuccessAlert && flash?.success && (
                     <Alert className="bg-green-50 border-green-200">
@@ -219,6 +219,9 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
                                                     Contact
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                    Total Invest
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                                     Status
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -259,6 +262,9 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900">{investor.email}</div>
                                                         <div className="text-sm text-gray-500">{investor.mobile}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm">{ parseFloat(investor.payments_sum_amount ?? 0.00).toFixed(2) }</div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {getStatusBadge(investor.status)}
@@ -344,8 +350,8 @@ export default function InvestorsIndex({ investors, filters = {}, statuses }: In
                                                             disabled={!link.url}
                                                             className={`
                                                                 relative inline-flex items-center px-4 py-2 text-sm font-medium
-                                                                ${link.active 
-                                                                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600' 
+                                                                ${link.active
+                                                                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                                                                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                                                                 }
                                                                 ${!link.url ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}

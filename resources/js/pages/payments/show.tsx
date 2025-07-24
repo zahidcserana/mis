@@ -18,7 +18,10 @@ import {
     Calendar,
     CheckCircle,
     UserCheck,
-    Clock
+    Clock,
+    DollarSignIcon,
+    UserIcon,
+    NotebookIcon
 } from 'lucide-react';
 
 interface ShowPaymentProps {
@@ -113,277 +116,261 @@ export default function ShowPayment({ payment }: ShowPaymentProps) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        router.post('/investments/bulk', { investments: rows });
+        router.post('/investments/bulk/' + payment.id, { investments: rows });
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={payment.investor.name} />
+                    <Head title={payment.investor.name} />
 
-            <div className="space-y-6">
-                {showSuccessAlert && flash?.success && (
-                    <Alert className="bg-green-50 border-green-200">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <AlertDescription className="text-green-800">
-                            {flash.success}
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                <div className="flex items-center gap-4">
-                    <Link href="/payments">
-                        <Button variant="outline" size="sm">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Payments
-                        </Button>
-                    </Link>
-                    <div className="flex-1">
-                        <h1 className="text-2xl font-semibold text-gray-900">Payment Details</h1>
-                        <p className="text-sm text-gray-600">
-                            View and manage payment information
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        {!payment.is_adjusted && (
-                            <Button onClick={handleActivate} size="sm" className="bg-green-600 hover:bg-green-700">
-                                <UserCheck className="mr-2 h-4 w-4" />
-                                Adjust
-                            </Button>
-                        )}
-                        {payment.is_adjusted && (
-                            <Button onClick={handleSetPending} variant="outline" size="sm">
-                                <Clock className="mr-2 h-4 w-4" />
-                                Pending
-                            </Button>
-                        )}
-                        <Link href={`/payments/${payment.id}/edit`}>
-                            <Button variant="outline" size="sm">
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                            </Button>
-                        </Link>
-                        <Button onClick={handleDelete} variant="outline" size="sm" className="text-red-600 hover:bg-red-50">
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="grid gap-6 lg:grid-cols-3">
-                    {/* Investor Profile */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Basic Information */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <User className="h-5 w-5" />
-                                    Basic Information
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-start gap-4">
-                                    <Avatar className="h-16 w-16">
-                                        <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
+                    <div className="flex h-full flex-1 flex-col gap-6 p-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Link href="/payments">
+                                    <Button variant="outline" size="sm">
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        Back to Payments
+                                    </Button>
+                                </Link>
+                                <div className="flex items-center gap-4">
+                                    <Avatar className="h-12 w-12">
+                                        <AvatarFallback className="text-lg">
                                             {getInitials(payment.investor.name)}
                                         </AvatarFallback>
                                     </Avatar>
-                                    <div className="flex-1 space-y-4">
-                                        <div>
-                                            <h2 className="text-xl font-semibold text-gray-900">{payment.amount}</h2>
-                                            {payment.investor?.name && (
-                                                <p className="text-gray-600">"{payment.investor?.name}"</p>
-                                            )}
-                                            <div className="mt-2">
-                                                {getStatusBadge(payment.is_adjusted)}
-                                            </div>
-                                        </div>
-
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div>
-                                                <dt className="text-sm font-medium text-gray-500">Amount</dt>
-                                                <dd className="mt-1 text-sm font-mono text-gray-900">{payment.amount}</dd>
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div>
-                                                <dt className="text-sm font-medium text-gray-500">Remarks</dt>
-                                                <dd className="mt-1 text-sm font-mono text-gray-900">{payment.remarks}</dd>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {!payment.is_adjusted && (
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Adjust amount */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <User className="h-5 w-5" />
-                                        Adjust amount
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {payment.investor?.active_accounts?.length > 0 ? (
-                                        <form onSubmit={handleSubmit} className="space-y-4">
-                                            {rows.map((row, index) => (
-                                                <div key={index} className="grid grid-cols-4 gap-4 items-end">
-                                                    {/* Account Dropdown */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Account</label>
-                                                        <select
-                                                            className="w-full border rounded p-2"
-                                                            value={row.account_id}
-                                                            onChange={(e) => handleChange(index, 'account_id', e.target.value)}
-                                                            required
-                                                        >
-                                                            <option value="">Select</option>
-                                                            {payment.investor?.active_accounts.map((account) => (
-                                                                <option key={account.id} value={account.id}>
-                                                                    {account.name}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-
-                                                    {/* Month Picker */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium">For Month</label>
-                                                        <input
-                                                            type="month"
-                                                            className="w-full border rounded p-2"
-                                                            value={row.for_month}
-                                                            onChange={(e) => handleChange(index, 'for_month', e.target.value)}
-                                                            required
-                                                        />
-                                                    </div>
-
-                                                    {/* Amount */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Amount</label>
-                                                        <input
-                                                            type="number"
-                                                            className="w-full border rounded p-2"
-                                                            value={row.amount}
-                                                            onChange={(e) => handleChange(index, 'amount', e.target.value)}
-                                                            required
-                                                        />
-                                                    </div>
-
-                                                    {/* Type Dropdown */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium">Type</label>
-                                                        <select
-                                                            className="w-full border rounded p-2"
-                                                            value={row.type}
-                                                            onChange={(e) => handleChange(index, 'type', e.target.value)}
-                                                            required
-                                                        >
-                                                            <option value="regular">Regular</option>
-                                                            <option value="eid">Eid</option>
-                                                            <option value="others">Others</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            ))}
-
-                                            {/* Add Button */}
-                                            <button
-                                                type="button"
-                                                onClick={addRow}
-                                                className="text-sm text-blue-600 hover:underline"
-                                            >
-                                                + Add Row
-                                            </button>
-
-                                            {/* Submit Button */}
-                                            <div>
-                                                <button
-                                                    type="submit"
-                                                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                                                >
-                                                    Submit Investments
-                                                </button>
-                                            </div>
-                                        </form>
-                                    ) : (
-                                        <p className="text-sm text-gray-500">No active accounts available.</p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </div>
-                    )}
-
-                    {/* Sidebar */}
-                    <div className="space-y-6">
-                        {/* Payment Details */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Calendar className="h-5 w-5" />
-                                    Payment Details
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Created</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {formatDate(payment.created_at)}
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {formatDate(payment.updated_at)}
-                                    </dd>
-                                </div>
-                                {payment.investor && (
                                     <div>
-                                        <dt className="text-sm font-medium text-gray-500">Created By</dt>
-                                        <dd className="mt-1 text-sm text-gray-900">
-                                            {payment.investor.name}
-                                        </dd>
+                                        <h1 className="text-3xl font-bold tracking-tight">{payment.amount} <small className='fs-1'>{formatDate(payment.created_at)}</small> </h1>
+                                        <div className="flex items-center gap-2">
+                                            <Badge
+                                                variant={payment.is_adjusted ? "default" : "secondary"}
+                                            >
+                                                {payment.is_adjusted ? 'Adjusted' : 'Pending'}
+                                            </Badge>
+                                        </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                {!payment.is_adjusted && (
+                                <Button onClick={handleActivate} size="sm" className="bg-green-600 hover:bg-green-700">
+                                        <UserCheck className="mr-2 h-4 w-4" />
+                                        Make Adjusted
+                                    </Button>
                                 )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Quick Actions */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Quick Actions</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                                <Link href={`/payments/${payment.id}/edit`} className="block">
-                                    <Button variant="outline" className="w-full justify-start">
+                                {payment.is_adjusted && (
+                                    <Button onClick={handleSetPending} variant="outline" size="sm">
+                                        <Clock className="mr-2 h-4 w-4" />
+                                        Pending
+                                    </Button>
+                                )}
+                                <Button onClick={handleDelete} variant="outline" size="sm" className="text-red-600 hover:bg-red-50">
+                                    <Trash className="mr-2 h-4 w-4" />
+                                    Delete
+                                </Button>
+                                <Link href={`/payments/${payment.id}/edit`}>
+                                    <Button>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit Payment
                                     </Button>
                                 </Link>
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start"
-                                    onClick={() => window.open(`mailto:${payment.investor?.email}`, '_blank')}
-                                >
-                                    <Mail className="mr-2 h-4 w-4" />
-                                    Send Email
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start"
-                                    onClick={() => window.open(`tel:${payment.investor?.mobile}`, '_blank')}
-                                >
-                                    <Phone className="mr-2 h-4 w-4" />
-                                    Call Mobile
-                                </Button>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {/* Basic Information */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <DollarSignIcon className="h-5 w-5" />
+                                        Basic Information
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                            <DollarSignIcon className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Paid Amount</p>
+                                            <p className="text-base font-medium">{payment.amount}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                            <UserIcon className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Investor</p>
+                                            <p className="text-base font-medium">{payment.investor?.name}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                            <UserIcon className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Adjusted</p>
+                                            <div className="flex items-center gap-2">
+                                                <Badge
+                                                    variant={payment.is_adjusted ? 'destructive' : 'outline'}
+                                                >
+                                                    {payment.is_adjusted ? 'Yes' : 'No'}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                                            <NotebookIcon className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Remarks</p>
+                                            <p className="text-base font-medium">{payment.remarks}</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Logs */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Badge className="h-5 w-5" />
+                                        Payment Logs
+                                        {payment.logs && payment.logs.length > 0 && (
+                                            <span className="ml-auto text-sm text-muted-foreground">
+                                                Adjust Amount: ৳
+                                                {payment.logs.reduce((sum, log) => sum + parseFloat(log.amount), 0).toFixed(2)}
+                                            </span>
+                                        )}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {payment.logs && payment.logs.length > 0 ? (
+                                        payment.logs.map((log, index) => (
+                                            <div
+                                                key={index}
+                                                className="border p-4 rounded bg-gray-50 space-y-1 text-sm"
+                                            >
+                                                <div><strong>Account ID:</strong> {log.account_id}</div>
+                                                <div><strong>For Month:</strong> {log.for_month}</div>
+                                                <div><strong>Amount:</strong> ৳{parseFloat(log.amount).toFixed(2)}</div>
+                                                <div><strong>Type:</strong> {log.type}</div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-sm text-muted-foreground">No logs available.</div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Adjust Payment */}
+                            {!payment.is_adjusted && (
+                                <Card className="md:col-span-2">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Clock className="h-5 w-5" />
+                                            Adjust Payment
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="w-full">
+                                            {payment.investor?.active_accounts?.length > 0 ? (
+                                                <form onSubmit={handleSubmit} className="space-y-4 w-full">
+                                                    {rows.map((row, index) => (
+                                                        <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+                                                            {/* Account Dropdown */}
+                                                            <div className="w-full">
+                                                                <label className="block text-sm font-medium">Account</label>
+                                                                <select
+                                                                    className="w-full border rounded p-2"
+                                                                    value={row.account_id}
+                                                                    onChange={(e) => handleChange(index, 'account_id', e.target.value)}
+                                                                    required
+                                                                >
+                                                                    <option value="">Select</option>
+                                                                    {payment.investor?.active_accounts.map((account) => (
+                                                                        <option key={account.id} value={account.id}>
+                                                                            {account.name}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+
+                                                            {/* Month Picker */}
+                                                            <div className="w-full">
+                                                                <label className="block text-sm font-medium">For Month</label>
+                                                                <input
+                                                                    type="month"
+                                                                    className="w-full border rounded p-2"
+                                                                    value={row.for_month}
+                                                                    onChange={(e) => handleChange(index, 'for_month', e.target.value)}
+                                                                    required
+                                                                />
+                                                            </div>
+
+                                                            {/* Amount */}
+                                                            <div className="w-full">
+                                                                <label className="block text-sm font-medium">Amount</label>
+                                                                <input
+                                                                    type="number"
+                                                                    className="w-full border rounded p-2"
+                                                                    value={row.amount}
+                                                                    onChange={(e) => handleChange(index, 'amount', e.target.value)}
+                                                                    required
+                                                                />
+                                                            </div>
+
+                                                            {/* Type Dropdown */}
+                                                            <div className="w-full">
+                                                                <label className="block text-sm font-medium">Type</label>
+                                                                <select
+                                                                    className="w-full border rounded p-2"
+                                                                    value={row.type}
+                                                                    onChange={(e) => handleChange(index, 'type', e.target.value)}
+                                                                    required
+                                                                >
+                                                                    <option value="regular">Regular</option>
+                                                                    <option value="eid">Eid</option>
+                                                                    <option value="others">Others</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Add Button */}
+                                                    <div className="pt-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={addRow}
+                                                            className="text-sm text-blue-600 hover:underline"
+                                                        >
+                                                            + Add Row
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Submit Button */}
+                                                    <div>
+                                                        <button
+                                                            type="submit"
+                                                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                                                        >
+                                                            Submit Investments
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                                ) : (
+                                                <p className="text-sm text-gray-500">No active accounts available.</p>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
-        </AppLayout>
+                </AppLayout>
     );
 }

@@ -22,6 +22,7 @@ class Payment extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'is_adjusted' => 'boolean',
+        'logs' => 'array',
     ];
 
     public function investor(): BelongsTo

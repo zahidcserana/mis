@@ -46,6 +46,7 @@ export interface User {
 export interface Investor {
     id: number;
     user_id: number;
+    total_payments: number;
     uid: string;
     name: string;
     nickname?: string;

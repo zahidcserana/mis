@@ -223,7 +223,7 @@ export default function PaymentsIndex({ payments, filters = {} }: PaymentsPagePr
                                             </Button>
                                         </th>
                                         <th className="px-6 py-4 text-left">Amount</th>
-                                        <th className="px-6 py-4 text-left">Adjust Status</th>
+                                        <th className="px-6 py-4 text-left">Adjusted</th>
                                         <th className="px-6 py-4 text-left">
                                             <Button
                                                 variant="ghost"

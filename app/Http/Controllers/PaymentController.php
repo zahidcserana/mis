@@ -54,7 +54,7 @@ class PaymentController extends Controller
             ->through(fn($payment) => [
                 'id' => $payment->id,
                 'amount' => $payment->amount,
-                'is_active' => $payment->is_adjusted,
+                'is_adjusted' => $payment->is_adjusted,
                 'investor' => [
                     'id' => $payment->investor->id,
                     'name' => $payment->investor->name,

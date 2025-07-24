@@ -18,7 +18,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('accounts/{account}/activate', [\App\Http\Controllers\AccountController::class, 'activate'])->name('accounts.activate');
     Route::patch('payments/{payment}/adjust', [PaymentController::class, 'adjust'])->name('payments.adjust');
-    Route::post('investments/bulk', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
+    Route::post('investments/bulk/{payment}', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
 
     Route::resource('payments', PaymentController::class);
     Route::resource('users', UserController::class);

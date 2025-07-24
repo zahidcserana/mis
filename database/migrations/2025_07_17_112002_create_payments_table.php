@@ -16,8 +16,9 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->foreignId('investor_id')->constrained()->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->boolean('is_adjusted')->default(true);
+            $table->boolean('is_adjusted')->default(false);
             $table->string('remarks')->nullable();
+            $table->json('logs')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

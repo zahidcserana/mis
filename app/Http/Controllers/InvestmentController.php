@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investment;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,7 +65,7 @@ class InvestmentController extends Controller
         //
     }
 
-    public function storeBulk(Request $request)
+    public function storeBulk(Request $request, Payment $payment)
     {
         $validated = $request->validate([
             'investments' => 'required|array|min:1',
@@ -74,10 +75,26 @@ class InvestmentController extends Controller
             'investments.*.type' => 'required|in:regular,eid,others',
         ]);
 
-        DB::transaction(function () use ($validated) {
+
+        DB::transaction(function () use ($validated, $payment) {
+            $newLogs = [];
+
             foreach ($validated['investments'] as $data) {
+                $newLogs[] = $data;
                 Investment::create($data);
             }
+
+            // Decode old logs
+            $existingLogs = is_array($payment->logs)
+                ? $payment->logs
+                : json_decode($payment->logs ?? '[]', true);
+
+            // Append new logs
+            $mergedLogs = array_merge($existingLogs, $newLogs);
+
+            // Save back to payment
+            $payment->logs = $mergedLogs;
+            $payment->save();
         });
 
         return redirect()->back()->with('success', 'Investments added successfully!');
