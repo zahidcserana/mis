@@ -12,22 +12,29 @@ use Inertia\Inertia;
 // })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // ✅ Accessible by all logged-in users
     Route::get('/', function () {
         return Inertia::render('dashboard');
-    })->name('dashboard');
+    })->name('dashboard')->middleware('role:admin,member');
 
-    Route::patch('accounts/{account}/activate', [\App\Http\Controllers\AccountController::class, 'activate'])->name('accounts.activate');
-    Route::patch('payments/{payment}/adjust', [PaymentController::class, 'adjust'])->name('payments.adjust');
-    Route::post('investments/bulk/{payment}', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
+    Route::get('/profile', function () {
+        return Inertia::render('profile');
+    })->name('profile')->middleware('role:admin,member');
 
-    Route::resource('payments', PaymentController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('accounts', AccountController::class);
+    // ✅ Admin-only routes
+    Route::middleware('role:admin')->group(function () {
+        Route::patch('accounts/{account}/activate', [AccountController::class, 'activate'])->name('accounts.activate');
+        Route::patch('payments/{payment}/adjust', [PaymentController::class, 'adjust'])->name('payments.adjust');
+        Route::post('investments/bulk/{payment}', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
 
-    // Investor routes
-    Route::resource('investors', \App\Http\Controllers\InvestorController::class);
-    Route::patch('investors/{investor}/activate', [\App\Http\Controllers\InvestorController::class, 'activate'])->name('investors.activate');
-    Route::patch('investors/{investor}/pending', [\App\Http\Controllers\InvestorController::class, 'setPending'])->name('investors.pending');
+        Route::resource('payments', PaymentController::class);
+        Route::resource('users', UserController::class);
+        Route::resource('accounts', AccountController::class);
+        Route::resource('investors', \App\Http\Controllers\InvestorController::class);
+
+        Route::patch('investors/{investor}/activate', [\App\Http\Controllers\InvestorController::class, 'activate'])->name('investors.activate');
+        Route::patch('investors/{investor}/pending', [\App\Http\Controllers\InvestorController::class, 'setPending'])->name('investors.pending');
+    });
 });
 
 require __DIR__.'/settings.php';
