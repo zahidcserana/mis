@@ -1,5 +1,6 @@
 # mis
 
+`php artisan migrate:fresh --seed`
 
 `composer run dev`
 

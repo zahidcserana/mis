@@ -29,7 +29,7 @@ class PaymentController extends Controller
 
         // Filter by verification
         if ($request->has('is_adjusted') && $request->is_adjusted !== '') {
-            $query->where('is_adjusted', $request->is_adjusted === 'is_adjusted');
+            $query->where('is_adjusted', $request->is_adjusted);
         }
 
         // Sorting

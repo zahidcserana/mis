@@ -91,7 +91,7 @@ export default function CreateInvestor({ statuses, errors = {} }: CreateInvestor
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Investor" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
                     <Link href="/investors">
@@ -127,7 +127,7 @@ export default function CreateInvestor({ statuses, errors = {} }: CreateInvestor
                                             type="text"
                                             value={data.uid}
                                             onChange={handleChange('uid')}
-                                            placeholder="e.g., INV001"
+                                            placeholder="ID: A0001"
                                             className={errors.uid ? 'border-red-500' : ''}
                                         />
                                         {errors.uid && (

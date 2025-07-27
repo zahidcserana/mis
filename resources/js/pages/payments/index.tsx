@@ -196,7 +196,7 @@ export default function PaymentsIndex({ payments, filters = {} }: PaymentsPagePr
                                     <SelectValue placeholder="Email Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Adjust status</SelectItem>
+                                    <SelectItem value="all">Adjust Status</SelectItem>
                                     <SelectItem value="1">Yes</SelectItem>
                                     <SelectItem value="0">No</SelectItem>
                                 </SelectContent>
