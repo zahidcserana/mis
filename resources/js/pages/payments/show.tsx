@@ -155,13 +155,13 @@ export default function ShowPayment({ payment }: ShowPaymentProps) {
                                 {!payment.is_adjusted && (
                                 <Button onClick={handleActivate} size="sm" className="bg-green-600 hover:bg-green-700">
                                         <UserCheck className="mr-2 h-4 w-4" />
-                                        Make Adjusted
+                                        Mark as Adjusted
                                     </Button>
                                 )}
                                 {payment.is_adjusted && (
                                     <Button onClick={handleSetPending} variant="outline" size="sm">
                                         <Clock className="mr-2 h-4 w-4" />
-                                        Pending
+                                        Mark as Pending
                                     </Button>
                                 )}
                                 <Button onClick={handleDelete} variant="outline" size="sm" className="text-red-600 hover:bg-red-50">
