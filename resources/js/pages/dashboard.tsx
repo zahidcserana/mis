@@ -3,6 +3,15 @@ import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { Head } from "@inertiajs/react";
 import { BanknoteIcon, DollarSign, MagnetIcon } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface Stats {
   total_investors: number;
@@ -10,15 +19,21 @@ interface Stats {
   total_amount: number;
 }
 
+interface MonthlyTotal {
+  month: string;
+  total: number;
+}
+
 interface DashboardProps {
   stats: Stats;
+  monthly_totals: MonthlyTotal[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "Dashboard", href: "/dashboard" },
 ];
 
-export default function Dashboard({ stats }: DashboardProps) {
+export default function Dashboard({ stats, monthly_totals }: DashboardProps) {
   const dashboardStats = [
     {
       title: "Total Investors",
@@ -66,11 +81,23 @@ export default function Dashboard({ stats }: DashboardProps) {
           })}
         </div>
 
-        {/* Placeholder for charts or tables */}
-        <div className="relative min-h-[300px] rounded-xl border p-4 bg-white dark:bg-gray-900 dark:border-gray-700">
-          <p className="text-gray-500 text-sm">
-            📊 Add charts or recent activity here
-          </p>
+        {/* Chart */}
+        <div className="p-4 bg-white rounded-xl border shadow-sm dark:bg-gray-900 dark:border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">📊 Monthly Amount Received</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={monthly_totals}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="total"
+                stroke="#3b82f6"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </AppLayout>
