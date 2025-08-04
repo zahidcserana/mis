@@ -14,10 +14,7 @@ use Inertia\Inertia;
 // Route::get('/reset', [UserController::class, 'reset'])->name('user.reset');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-
+    Route::get('/', [\App\Http\Controllers\HomeController::class, 'dashboard'])->name('dashboard');
     Route::patch('accounts/{account}/activate', [\App\Http\Controllers\AccountController::class, 'activate'])->name('accounts.activate');
     Route::patch('payments/{payment}/adjust', [PaymentController::class, 'adjust'])->name('payments.adjust');
     Route::post('investments/bulk/{payment}', [InvestmentController::class, 'storeBulk'])->name('investments.storeBulk');
