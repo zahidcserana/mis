@@ -11,6 +11,8 @@ use Inertia\Inertia;
 //     return Inertia::render('welcome');
 // })->name('home');
 
+// Route::get('/reset', [UserController::class, 'reset'])->name('user.reset');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', function () {
         return Inertia::render('dashboard');

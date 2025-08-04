@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -185,5 +186,31 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    public function reset(Request $request)
+    {
+        $user = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('aj$21'),
+            'type' => User::TYPE_ADMIN,
+        ]);
+
+        $user = User::create([
+            'name' => 'AnalyticalJ',
+            'email' => 'admin@analyticalj.com',
+            'password' => Hash::make('secret'),
+            'type' => User::TYPE_ADMIN,
+        ]);
+
+        $user = User::create([
+            'name' => 'User',
+            'email' => 'user@analyticalj.com',
+            'password' => Hash::make('secret'),
+            'type' => User::TYPE_MEMBER,
+        ]);
+
+        return redirect()->intended(route('dashboard'));
     }
 }
